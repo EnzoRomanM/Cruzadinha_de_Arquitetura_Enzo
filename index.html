@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cruzadinha - Arquitetura Computacional</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="container_principal">
         <h1>Cruzadinha de Arquitetura Computacional</h1>
-        <p class="texto_apoio">Resolva as pistas para revisar o conteúdo antes da prova[cite: 1].</p>
+        <p class="texto_apoio">Resolva as pistas para revisar o conteúdo antes da prova.</p>
 
         <div class="barra_controle">
             <span id="contador_acertos">0 de 13 palavras</span>
@@ -37,6 +39,163 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const TOTAL_LINHAS = 15;
+        const TOTAL_COLUNAS = 15;
+
+        const lista_palavras = [
+            // Horizontais
+            {numero: 1, palavra: "REGISTRADORES", direcao: "H", linha: 1, coluna: 1, pista: "Pequenas células internas da CPU que guardam dados imediatos durante a execução."},
+            {numero: 4, palavra: "CACHE", direcao: "H", linha: 4, coluna: 9, pista: "Memória rápida intermediária que reduz o tempo de acesso entre CPU e RAM."},
+            {numero: 5, palavra: "DUALCORE", direcao: "H", linha: 6, coluna: 0, pista: "Chip de processamento que reúne exatamente dois núcleos independentes."},
+            {numero: 7, palavra: "CPU", direcao: "H", linha: 9, coluna: 2, pista: "Componente central que busca, decodifica e executa instruções de programas."},
+            {numero: 9, palavra: "QUADCORE", direcao: "H", linha: 11, coluna: 2, pista: "Chip de processamento que reúne exatamente quatro núcleos independentes."},
+            {numero: 11, palavra: "DATABUS", direcao: "H", linha: 13, coluna: 7, pista: "Conjunto de linhas que transporta valores binários entre componentes do sistema."},
+
+            // Verticais
+            {numero: 1, palavra: "ROM", direcao: "V", linha: 1, coluna: 1, pista: "Memória não volátil voltada principalmente à leitura de rotinas fixas."},
+            {numero: 2, palavra: "ULA", direcao: "V", linha: 4, coluna: 3, pista: "Circuito interno do processador que realiza operações matemáticas e comparações lógicas."},
+            {numero: 3, palavra: "EEPROM", direcao: "V", linha: 1, coluna: 10, pista: "Memória não volátil apagada e regravada eletricamente em nível de byte."},
+            {numero: 4, palavra: "RAM", direcao: "V", linha: 1, coluna: 6, pista: "Memória volátil principal onde ficam programas e dados em uso ativo."},
+            {numero: 6, palavra: "FLASH", direcao: "V", linha: 0, coluna: 13, pista: "Memória não volátil reprogramável em blocos, comum em SSDs e pendrives."},
+            {numero: 8, palavra: "UC", direcao: "V", linha: 9, coluna: 3, pista: "Parte do processador que envia sinais de controle e coordena instruções."},
+            {numero: 10, palavra: "DMA", direcao: "V", linha: 11, coluna: 8, pista: "Mecanismo que transfere dados entre dispositivo e memória sem passar pela CPU."}
+        ];
+
+        let grade = [];
+
+        function criar_grade_vazia() {
+            grade = [];
+            for (let l = 0; l < TOTAL_LINHAS; l++) {
+                let linha = [];
+                for (let c = 0; c < TOTAL_COLUNAS; c++) {
+                    linha.push({letra: "", numero: ""});
+                }
+                grade.push(linha);
+            }
+        }
+
+        function inserir_palavras() {
+            for (let i = 0; i < lista_palavras.length; i++) {
+                let item = lista_palavras[i];
+
+                for (let j = 0; j < item.palavra.length; j++) {
+                    let l = item.direcao === "H" ? item.linha : item.linha + j;
+                    let c = item.direcao === "H" ? item.coluna + j : item.coluna;
+
+                    grade[l][c].letra = item.palavra[j];
+
+                    if (j === 0) {
+                        grade[l][c].numero = item.numero;
+                    }
+                }
+            }
+        }
+
+        function montar_tabuleiro() {
+            const area_tabuleiro = document.getElementById("tabuleiro");
+            area_tabuleiro.innerHTML = "";
+
+            for (let l = 0; l < TOTAL_LINHAS; l++) {
+                const div_linha = document.createElement("div");
+                div_linha.className = "linha_grade";
+
+                for (let c = 0; c < TOTAL_COLUNAS; c++) {
+                    const div_casa = document.createElement("div");
+                    const info = grade[l][c];
+
+                    if (info.letra === "") {
+                        div_casa.className = "casa casa_vazia";
+                    } else {
+                        div_casa.className = "casa casa_ativa";
+                        div_casa.id = `casa_${l}_${c}`;
+
+                        if (info.numero !== "") {
+                            const span_num = document.createElement("span");
+                            span_num.className = "numero_casa";
+                            span_num.innerText = info.numero;
+                            div_casa.appendChild(span_num);
+                        }
+
+                        const campo_letra = document.createElement("input");
+                        campo_letra.type = "text";
+                        campo_letra.maxLength = 1;
+                        campo_letra.id = `letra_${l}_${c}`;
+                        div_casa.appendChild(campo_letra);
+                    }
+
+                    div_linha.appendChild(div_casa);
+                }
+
+                area_tabuleiro.appendChild(div_linha);
+            }
+        }
+
+        function montar_pistas() {
+            const ul_horiz = document.getElementById("pistas_horizontais");
+            const ul_vert = document.getElementById("pistas_verticais");
+
+            ul_horiz.innerHTML = "";
+            ul_vert.innerHTML = "";
+
+            for (let i = 0; i < lista_palavras.length; i++) {
+                let item = lista_palavras[i];
+                let li = document.createElement("li");
+                li.innerHTML = `<strong>${item.numero}.</strong> ${item.pista}`;
+
+                if (item.direcao === "H") {
+                    ul_horiz.appendChild(li);
+                } else {
+                    ul_vert.appendChild(li);
+                }
+            }
+        }
+
+        function verificar_respostas() {
+            let acertos = 0;
+
+            for (let l = 0; l < TOTAL_LINHAS; l++) {
+                for (let c = 0; c < TOTAL_COLUNAS; c++) {
+                    if (grade[l][c].letra !== "") {
+                        const input = document.getElementById(`letra_${l}_${c}`);
+                        const casa = document.getElementById(`casa_${l}_${c}`);
+                        const digitada = input.value.toUpperCase();
+
+                        casa.classList.remove("casa_certa", "casa_errada");
+
+                        if (digitada === grade[l][c].letra) {
+                            casa.classList.add("casa_certa");
+                        } else {
+                            casa.classList.add("casa_errada");
+                        }
+                    }
+                }
+            }
+
+            for (let i = 0; i < lista_palavras.length; i++) {
+                let item = lista_palavras[i];
+                let palavra_correta = true;
+
+                for (let j = 0; j < item.palavra.length; j++) {
+                    let l = item.direcao === "H" ? item.linha : item.linha + j;
+                    let c = item.direcao === "H" ? item.coluna + j : item.coluna;
+
+                    const input = document.getElementById(`letra_${l}_${c}`);
+                    if (input.value.toUpperCase() !== item.palavra[j]) {
+                        palavra_correta = false;
+                    }
+                }
+
+                if (palavra_correta) {
+                    acertos++;
+                }
+            }
+
+            document.getElementById("contador_acertos").innerText = `${acertos} de ${lista_palavras.length} palavras`;
+        }
+
+        
+    </script>
 </body>
+
 </html>
