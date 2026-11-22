@@ -194,7 +194,31 @@
             document.getElementById("contador_acertos").innerText = `${acertos} de ${lista_palavras.length} palavras`;
         }
 
-        
+        function reiniciar_jogo() {
+            for (let l = 0; l < TOTAL_LINHAS; l++) {
+                for (let c = 0; c < TOTAL_COLUNAS; c++) {
+                    if (grade[l][c].letra !== "") {
+                        const input = document.getElementById(`letra_${l}_${c}`);
+                        const casa = document.getElementById(`casa_${l}_${c}`);
+
+                        input.value = "";
+                        casa.classList.remove("casa_certa", "casa_errada");
+                    }
+                }
+            }
+
+            document.getElementById("contador_acertos").innerText = `0 de ${lista_palavras.length} palavras`;
+        }
+
+        function iniciar_jogo() {
+            criar_grade_vazia();
+            inserir_palavras();
+            montar_tabuleiro();
+            montar_pistas();
+        }
+
+        iniciar_jogo();
+
     </script>
 </body>
 
