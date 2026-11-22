@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruzadinha - Arquitetura Computacional</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container_principal">
+        <h1>Cruzadinha de Arquitetura Computacional</h1>
+        <p class="texto_apoio">Resolva as pistas para revisar o conteúdo antes da prova[cite: 1].</p>
+
+        <div class="barra_controle">
+            <span id="contador_acertos">0 de 13 palavras</span>
+            <div class="area_botoes">
+                <button onclick="verificar_respostas()">Conferir</button>
+                <button onclick="reiniciar_jogo()">Reiniciar</button>
+            </div>
+        </div>
+
+        <div class="conteudo_jogo">
+            <div id="tabuleiro" class="grade_cruzadinha"></div>
+
+            <div class="painel_pistas">
+                <div class="bloco_pista">
+                    <h2>Horizontais</h2>
+                    <ul id="pistas_horizontais"></ul>
+                </div>
+
+                <div class="bloco_pista">
+                    <h2>Verticais</h2>
+                    <ul id="pistas_verticais"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
